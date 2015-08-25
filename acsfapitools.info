@@ -1,0 +1,3 @@
+name = ACSF Tools
+description = Acquia Cloud Site Factory API Drush command tools
+core = 7.x
