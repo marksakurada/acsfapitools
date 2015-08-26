@@ -27,7 +27,6 @@ function acsfapitools_drush_command() {
  */
 function drush_acsfapitools_sf_connect() {
   var_dump(acsfapitools_conn());
-
 }
 
 /**
@@ -35,7 +34,7 @@ function drush_acsfapitools_sf_connect() {
  */
 function drush_acsfapitools_sf_ping() {
   $data = acsfapitools_getcmd('ping');
-  drush_print(dt($data->message));
+  drush_log(dt($data->message), 'ok');
 }
 
 /**
@@ -43,12 +42,11 @@ function drush_acsfapitools_sf_ping() {
  */
 function drush_acsfapitools_sf_status() {
   $data = acsfapitools_getcmd('status');
-  $message = $data->verbose
-    . 'site_creation: ' . $data->site_creation . PHP_EOL
+  $message = 'site_creation: ' . $data->site_creation . PHP_EOL
     . 'site_duplication: ' . $data->site_duplication . PHP_EOL
     . 'domain_management: ' . $data->domain_management . PHP_EOL
     . 'bulk_operations: ' . $data->bulk_operations . PHP_EOL;
-  drupal_set_message($message, 0);
+  drush_log($message, 'ok');
 }
 
 

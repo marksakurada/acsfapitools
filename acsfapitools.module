@@ -4,8 +4,7 @@
  */
 function acsfapitools_getcmd($cmdurl = 'ping', $method = 'GET') {
   $url = acsfapitools_conn() . '/' . $cmdurl;
-  $response = drupal_http_request($url, $headers = array(),
-    $method, $data = NULL, $retry = 3);
+  $response = drupal_http_request($url, $headers = array(), $method, $data = NULL, $retry = 3);
   $data = (string) $response->data;
   $data = json_decode($data);
   $code = (string) $response->code;
@@ -14,20 +13,22 @@ function acsfapitools_getcmd($cmdurl = 'ping', $method = 'GET') {
     drush_set_error(dt("HTTP response code: '!code'", array('!code' => $code)));
   }
 
+  if (property_exists($data, 'server_time') && drush_get_context('DRUSH_VERBOSE')) {
+    drush_log(dt("Server time: '!time'", array('!time' => $data->server_time)), 'notice');
+  }
+
   if (drush_get_context('DRUSH_VERBOSE')) {
-    (property_exists($data, 'server_time') ?
-    drush_print(dt("Server time: '!time'", array('!time' => $data->server_time))) : $error = 'err');
-    drush_print(dt("Request url: '!url'", array('!url' => $url)));
-    drush_print(dt("Request meathod: '!method'", array('!method' => $method)));
-    drush_print(dt("Command: '!cmdurl'", array('!cmdurl' => $cmdurl)));
-    drush_print(dt("HTTP response code: '!code'", array('!code' => $code)));
+    drush_log(dt("Request url: '!url'", array('!url' => $url)));
+    drush_log(dt("Request meathod: '!method'", array('!method' => $method)));
+    drush_log(dt("Command: '!cmdurl'", array('!cmdurl' => $cmdurl)));
+    drush_log(dt("HTTP response code: '!code'", array('!code' => $code)));
   }
 
   return $data;
 }
 
 /**
- * function to build request url.
+ * function to build request url fetching from alias
  *
  * @TODO cmd line parameters
  */
