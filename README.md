@@ -17,10 +17,15 @@ and enable the module
 
 ### Usage
 
-####sf-connect (sfc) 
+####sf-connect (sfc)
 Returns the formatted URL used to connect.
 
 example:
+    > drush @mysite.api sfc
 
-    > drush @mysite.api stc
-    https://mysite.user:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX@www.mysite.acsitefactory.com/api/v1                                             [ok]
+returns:
+    https://mysite.user:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX@www.mysite.acsitefactory.com/api/v1
+
+###Credit
+
+Thanks to Mike Decker (mdecker@entercom.com) for his original script and inspiration.

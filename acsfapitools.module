@@ -2,9 +2,13 @@
 /**
  * acsf function to execute a get request.
  */
-function acsfapitools_getcmd($cmdurl = 'ping', $method = 'GET') {
+function acsfapitools_getcmd($cmdurl = 'ping', $method = 'GET', $data = NULL) {
   $url = acsfapitools_conn() . '/' . $cmdurl;
-  $response = drupal_http_request($url, $headers = array(), $method, $data = NULL, $retry = 3);
+  $headers = array(
+    'Content-Type' => 'application/json',
+    'Accept' => 'application/json',
+  );
+  $response = drupal_http_request($url, $headers, $method, $data, $retry = 3);
   $data = (string) $response->data;
   $data = json_decode($data);
   $code = (string) $response->code;
