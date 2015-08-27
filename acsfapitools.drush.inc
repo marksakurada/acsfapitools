@@ -31,12 +31,46 @@ function acsfapitools_drush_command() {
     'description' => 'Get detailed information about a site.',
     'aliases' => array('sfsd'),
     'examples' => array(
-      'drush sf-sitedetail --id:XXX' => 'Display the data for the site id "XXX" from the API.',
+      'drush sf-sitedetail XXX' => 'Display the data for the site id "XXX" from the API.',
     ),
   'arguments' => array(
     'id' => 'The id of the site to fetch.',
   ),
   'required-arguments' => 1,
+  );
+  $items['sf-backup'] = array(
+    'description' => 'Create a site backup.',
+    'aliases' => array('sfbu'),
+    'examples' => array(
+      'drush sf-sitebackup XXX' => 'The backup site id "XXX".',
+    ),
+  'arguments' => array(
+    'id' => 'The id of the site to backup.',
+     ),
+  'required-arguments' => 1,
+  );
+  $items['sf-backuplist'] = array(
+    'description' => 'List site backups.',
+    'aliases' => array('sfblist'),
+    'examples' => array(
+      'drush sf-sitebackuplist XXX' => 'List the backups site id "XXX".',
+    ),
+    'arguments' => array(
+      'id' => 'The id of the site.',
+      ),
+      'required-arguments' => 1,
+  );
+  $items['sf-backupurl'] = array(
+    'description' => 'Get temporary site backup URL.',
+    'aliases' => array('sfburl'),
+    'examples' => array(
+      'drush sf-sitebackuplist XXX YYY' => 'Return a URL for site id "XXX" backup id "YYY".',
+    ),
+    'arguments' => array(
+      'id' => 'The id of the site.',
+      'bkup' => 'The id of the backup.',
+      ),
+      'required-arguments' => 1,
   );
   return $items;
 }
@@ -100,6 +134,7 @@ function drush_acsfapitools_sf_setstatus() {
 function drush_acsfapitools_sf_sites() {
   $data = acsfapitools_getcmd('sites');
   $message = dt('count: ') . $data->count . PHP_EOL;
+  var_dump($data);
   foreach ($data->sites as $value => $site) {
     $message .= dt('id|site|domain: ') . implode(' | ', (array) $site) . PHP_EOL;
   }
@@ -114,13 +149,51 @@ function drush_acsfapitools_sf_sites() {
 **/
 function drush_acsfapitools_sf_sitedetail($id = NULL) {
   $data = acsfapitools_getcmd('sites/' . $id);
-
   $message = dt('id|created|owner|site: ')
-    . $data->id . ' | ' . $data->created . ' | ' . $data->owner . ' | ' . $data->site . ' | ' . PHP_EOL;
-
+    . $data->id . ' | ' . $data->created . ' | ' . $data->owner . ' | ' . $data->site . PHP_EOL;
   foreach ($data->domains as $value => $domain) {
     $message .=  $domain . PHP_EOL;
   }
 
   drush_log($message, 'ok');
+}
+
+/**
+ * Callback for the sf-backup command
+ *  Name	Data type	Mandatory	Possible values	Default
+ * label	string	no	The human-readable description of this backup.
+ * callback_url	string	no	The callback URL, which is invoked upon completion.
+ * callback_method	string	no	The callback method, "GET", or "POST". Uses "POST" if empty.
+ * caller_data	string	no	Data that should be included in the callback, json encoded.
+ *
+**/
+function drush_acsfapitools_sf_backup($id = NULL) {
+  $testdata = array(
+    'label' => 'drush_backup',
+  );
+
+  $data = acsfapitools_getcmd('sites/' . $id . '/backup', 'POST', drupal_http_build_query($testdata));
+  drush_log('Task id:' . $data->task_id, 'ok');
+}
+
+/**
+ * Callback for the sf-backuplist command
+**/
+function drush_acsfapitools_sf_backuplist($id = NULL) {
+  $data = acsfapitools_getcmd('sites/' . $id . '/backups');
+  $message = dt('id | nid | status | uid | timestamp | bucket | directory | file | label') . PHP_EOL;
+  foreach ($data->backups as $value => $backup) {
+    $message .= implode(' | ', (array ) $backup) . PHP_EOL;
+  }
+
+  drush_log($message, 'ok');
+}
+
+//GET /api/v1/sites/{site_id}/backups/{backup_id}/url
+/**
+ * Callback for the sf-backupurl command
+**/
+function drush_acsfapitools_sf_backupurl($id = NULL, $bkid = NULL) {
+  $data = acsfapitools_getcmd('sites/' . $id . '/backups/' . $bkid . '/url');
+  drush_log($data->url, 'ok');
 }

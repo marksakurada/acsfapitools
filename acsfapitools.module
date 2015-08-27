@@ -4,11 +4,24 @@
  */
 function acsfapitools_getcmd($cmdurl = 'ping', $method = 'GET', $data = NULL) {
   $url = acsfapitools_conn() . '/' . $cmdurl;
-  $headers = array(
-    'Content-Type' => 'application/json',
-    'Accept' => 'application/json',
+
+  if ($method === 'POST') {
+    $headers = array('Content-Type' => 'application/x-www-form-urlencoded');
+  } else {
+    $headers = array(
+      'Content-Type' => 'application/json',
+      'Accept' => 'application/json',
+    );
+  }
+
+  $options = array(
+                  'method' => $method,
+                  'data' => $data,
+                  'timeout' => 10,
+                  'headers' => $headers,
   );
-  $response = drupal_http_request($url, $headers, $method, $data, $retry = 3);
+
+  $response = drupal_http_request($url, $options);
   $data = (string) $response->data;
   $data = json_decode($data);
   $code = (string) $response->code;
